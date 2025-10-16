@@ -7,8 +7,8 @@ export async function action() {}
 
 export default function Dashboard() {
   return (
-    <div>
-      Dashboard <Outlet />
+    <div className="mt-20">
+      <Outlet />
     </div>
   )
 }
