@@ -6,6 +6,7 @@ import InputField from "../../common/TextField/InputField";
 import { parseJwt } from "../../utils/getToken";
 import { useAuthContext } from "../../context/AuthContext";
 import RegisterForm from "./RegisterForm";
+import ResetPasswordEmailOnly from "./ChangePassword";
 
 export default function LoginForm() {
   const { login, setNoti } = useAuthContext();
@@ -13,6 +14,7 @@ export default function LoginForm() {
   const [contrasena, setContrasena] = useState("");
   const [loading, setLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   const handleLogin = async () => {
     if (!correo || !contrasena) {
@@ -77,6 +79,10 @@ export default function LoginForm() {
     return <RegisterForm onBackToLogin={() => setIsRegistering(false)} />;
   }
 
+  if (isResetting) {
+    return <ResetPasswordEmailOnly onBackToLogin={() => setIsResetting(false)} />;
+  }
+
   return (
     <div className="login-form">
       <div className="login-box">
@@ -111,7 +117,14 @@ export default function LoginForm() {
           >
             ¿No tienes cuenta? Regístrate
           </a>
-          <a href="#" className="login-link">
+          <a
+            href="#"
+            className="login-link"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsResetting(true);
+            }}
+          >
             Recuperar Contraseña
           </a>
         </div>
