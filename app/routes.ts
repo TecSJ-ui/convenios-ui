@@ -3,7 +3,6 @@ import { type RouteConfig, index, route } from "@react-router/dev/routes";
 export default [
   // Rutas públicas (sin sesión)
   index("routes/Login.tsx"),
-
   // Rutas protegidas (con autenticación y layout con Sidebar)
   route("", "components/Protected/ProtectedRoute.tsx", [
     route("", "routes/layouts/ProtectedLayout.tsx", [

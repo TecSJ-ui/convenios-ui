@@ -5,12 +5,14 @@ import { Button, CircularProgress } from "@mui/material";
 import InputField from "../../common/TextField/InputField";
 import { parseJwt } from "../../utils/getToken";
 import { useAuthContext } from "../../context/AuthContext";
+import RegisterForm from "./RegisterForm";
 
 export default function LoginForm() {
   const { login, setNoti } = useAuthContext();
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const handleLogin = async () => {
     if (!correo || !contrasena) {
@@ -23,7 +25,6 @@ export default function LoginForm() {
     }
 
     setLoading(true);
-
     try {
       const domain = import.meta.env.VITE_PUBLIC_URL;
       const response = await axios.post(`${domain}/login`, {
@@ -45,7 +46,6 @@ export default function LoginForm() {
         };
 
         login(userData);
-
         setNoti({
           open: true,
           type: "success",
@@ -73,6 +73,10 @@ export default function LoginForm() {
 
   const isFormValid = correo.trim() !== "" && contrasena.trim() !== "";
 
+  if (isRegistering) {
+    return <RegisterForm onBackToLogin={() => setIsRegistering(false)} />;
+  }
+
   return (
     <div className="login-form">
       <div className="login-box">
@@ -97,7 +101,14 @@ export default function LoginForm() {
         </div>
 
         <div className="login-links">
-          <a href="#" className="login-link">
+          <a
+            href="#"
+            className="login-link"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsRegistering(true);
+            }}
+          >
             ¿No tienes cuenta? Regístrate
           </a>
           <a href="#" className="login-link">
@@ -118,9 +129,7 @@ export default function LoginForm() {
             textTransform: "none",
             fontSize: "1rem",
             borderRadius: "8px",
-            boxShadow: isFormValid
-              ? "0 3px 6px rgba(0,0,0,0.2)"
-              : "none",
+            boxShadow: isFormValid ? "0 3px 6px rgba(0,0,0,0.2)" : "none",
             "&:hover": {
               backgroundColor: isFormValid
                 ? "rgb(35, 10, 120)"
