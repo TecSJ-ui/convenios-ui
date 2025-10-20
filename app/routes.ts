@@ -12,6 +12,7 @@ export default [
       route("indicadores", "routes/Indicators.tsx"),
       route("configuracion", "routes/Settings.tsx"),
       route("cuentas", "routes/Accounts.tsx", [
+        route("crear", "routes/AccountRegistration.tsx"),
         route(":accountId", "routes/AccountDetails.tsx"),
       ]),
       route("dashboard", "routes/Dashboard.tsx", [
