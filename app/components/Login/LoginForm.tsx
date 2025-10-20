@@ -29,10 +29,19 @@ export default function LoginForm() {
     setLoading(true);
     try {
       const domain = import.meta.env.VITE_PUBLIC_URL;
-      const response = await axios.post(`${domain}/login`, {
-        mail: correo,
-        pass: contrasena,
-      });
+      const apiKey = import.meta.env.VITE_PUBLIC_API_KEY;
+      const response = await axios.post(
+        `${domain}/login`,
+        {
+          mail: correo,
+          pass: contrasena,
+        },
+        {
+          headers: {
+            "api_key": apiKey,
+          },
+        }
+      );
 
       if (response.status === 200 && response.data?.token) {
         const parsed = parseJwt(response.data.token);
