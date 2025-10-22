@@ -1,0 +1,185 @@
+import { useState, useEffect } from "react";
+import {
+  DataGrid,
+  GridPagination,
+  type GridColDef,
+  type GridPaginationModel,
+} from "@mui/x-data-grid";
+import { Box, Button, Chip, Toolbar } from "@mui/material";
+import { getData } from "~/utils/apiUtils";
+import DownloadIcon from "@mui/icons-material/Download";
+import "./styles/AccountsTable.css";
+
+interface Account {
+  id_Cuenta: number;
+  nombre: string;
+  correo: string;
+  rol: string;
+  rfc: string;
+  estado: "Activo" | "Inactivo";
+  id_Unidad_Academica: number;
+  unidad: string;
+}
+
+export default function AccountsTable() {
+  const [rows, setRows] = useState<Account[]>([]);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 10,
+  });
+  const [rowCount, setRowCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    async function fetchAccounts() {
+      setLoading(true);
+      const response = await getData({
+        endpoint: "/cuenta/convenios",
+        query: `?page=${paginationModel.page + 1}&limit=${paginationModel.pageSize}`,
+      });
+
+      if (response.statusCode === 200 && response.data?.data) {
+        setRows(response.data.data);
+        setRowCount(response.data.total);
+      } else {
+        setRows([]);
+        setRowCount(0);
+      }
+
+      setLoading(false);
+    }
+
+    fetchAccounts();
+  }, [paginationModel]);
+
+  const getRoleColor = (rol: string):
+    | "default"
+    | "primary"
+    | "secondary"
+    | "error"
+    | "info"
+    | "success"
+    | "warning" => {
+    const colors = {
+      Coordinador: "info",
+      Revisor: "warning",
+      Director: "secondary",
+      "Director Unidad": "secondary",
+      "Director General": "secondary",
+      Gestor: "success",
+      Organización: "default",
+    } as const;
+    return colors[rol as keyof typeof colors] || "default";
+  };
+
+  const getStatusColor = (estado: string) =>
+    estado === "Activo" ? "success" : "error";
+
+  const columns: GridColDef<Account>[] = [
+    { field: "correo", headerName: "CORREO", flex: 1.3, minWidth: 200 },
+    {
+      field: "nombre",
+      headerName: "NOMBRE O RAZÓN SOCIAL",
+      flex: 1.5,
+      minWidth: 200,
+    },
+    {
+      field: "rol",
+      headerName: "ROL",
+      flex: 0.8,
+      minWidth: 140,
+      renderCell: (params) => (
+        <Chip
+          label={params.value}
+          color={getRoleColor(params.value)}
+          variant="filled"
+          size="small"
+          className="chip-role"
+        />
+      ),
+    },
+    {
+      field: "unidad",
+      headerName: "UNIDAD ACADÉMICA",
+      flex: 1,
+      minWidth: 160,
+    },
+    {
+      field: "estado",
+      headerName: "ESTADO",
+      flex: 0.7,
+      minWidth: 120,
+      renderCell: (params) => (
+        <Chip
+          label={params.value}
+          color={getStatusColor(params.value)}
+          variant="filled"
+          size="small"
+          className="chip-status"
+        />
+      ),
+    },
+    {
+      field: "acciones",
+      headerName: "ACCIONES",
+      flex: 0.4,
+      minWidth: 100,
+      sortable: false,
+      renderCell: () => (
+        <Box sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          height: "100%",
+        }}>
+          <Button variant="text" size="small" sx={{ fontSize: 18, color: "#555" }}>
+            ⋮
+          </Button>
+        </Box>
+      ),
+    },
+  ];
+
+  const CustomFooter = () => (
+    <Toolbar className="footer-toolbar">
+      <Box className="export-section-inline">
+        <Button
+          startIcon={<DownloadIcon fontSize="small" />}
+          variant="text"
+          sx={{
+            textTransform: "none", color: "#333",
+            fontWeight: 500,
+            fontFamily: "madaniArabicRegular",
+          }}
+        >
+          Exportar Excel
+        </Button>
+      </Box>
+      <GridPagination />
+    </Toolbar>
+  );
+
+  return (
+    <Box className="accounts-table-container">
+      <DataGrid
+        className="accounts-table"
+        disableColumnMenu
+        rows={rows}
+        columns={columns}
+        loading={loading}
+        getRowId={(row) => row.id_Cuenta}
+        paginationMode="server"
+        rowCount={rowCount}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        pageSizeOptions={[5, 10, 20]}
+        slots={{ footer: CustomFooter }}
+        sx={{
+          border: "none",
+          "& .MuiDataGrid-columnHeaders": { fontWeight: 600 },
+        }}
+      />
+    </Box>
+  );
+}
