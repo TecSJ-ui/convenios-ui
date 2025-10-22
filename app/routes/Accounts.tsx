@@ -1,6 +1,7 @@
 import { Outlet, useNavigate, useLocation } from "react-router";
-import Breadcrumbs from "~/common/Breadcrumbs/Breadcrumbs";
 import { Typography, Button } from "@mui/material";
+import Breadcrumbs from "~/common/Breadcrumbs/Breadcrumbs";
+import AccountsTable from "~/components/Accounts/AccountsTable";
 import "./styles/Accounts.css";
 
 export default function Accounts() {
@@ -22,7 +23,6 @@ export default function Accounts() {
       {isRoot ? (
         <>
           <Typography className="title-page">Gestión de Cuentas</Typography>
-
           <Button
             variant="contained"
             sx={{
@@ -32,11 +32,13 @@ export default function Accounts() {
               textTransform: "none",
               fontSize: "1rem",
               borderRadius: "8px",
+              mb: 4,
             }}
             onClick={() => navigate("/cuentas/crear")}
           >
             Ir a Alta de Cuenta
           </Button>
+          <AccountsTable />
         </>
       ) : (
         <Outlet />
