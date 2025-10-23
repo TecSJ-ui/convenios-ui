@@ -86,7 +86,7 @@ export default function RegisterAccounts() {
           setNoti({
             open: true,
             type: "success",
-            message: `Cuenta creada con exito`,
+            message: `Cuenta creada con exito. El nuevo usuario recibirá su contraseña por correo electrónico.`,
           })
           return navigate("/cuentas");
         } 
