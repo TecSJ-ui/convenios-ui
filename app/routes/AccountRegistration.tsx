@@ -1,5 +1,6 @@
 import { Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router";
+import RegisterAccounts from "~/components/Accounts/RegisterAccounts";
 
 export default function AccountRegistration() {
   const navigate = useNavigate();
@@ -25,23 +26,9 @@ export default function AccountRegistration() {
           color: "#1e1e2f",
         }}
       >
-        Aquí se mostraría el formulario de alta de cuenta.
+        Ingresa los datos para crear una cuenta
       </Typography>
-
-      <Button
-        variant="contained"
-        sx={{
-          backgroundColor: "#4b5563",
-          fontFamily: "madaniArabicBold",
-          textTransform: "none",
-          fontSize: "1.3rem",
-          padding: "0.7rem 2rem",
-          borderRadius: "12px",
-        }}
-        onClick={() => navigate("/cuentas")}
-      >
-        Volver
-      </Button>
+      <RegisterAccounts />
     </div>
   );
 }
