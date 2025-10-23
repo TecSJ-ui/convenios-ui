@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   DataGrid,
   GridPagination,
@@ -6,9 +6,10 @@ import {
   type GridPaginationModel,
 } from "@mui/x-data-grid";
 import { Box, Button, Chip, Toolbar } from "@mui/material";
-import { getData } from "~/utils/apiUtils";
 import DownloadIcon from "@mui/icons-material/Download";
+import { getData } from "~/utils/apiUtils";
 import "./styles/AccountsTable.css";
+import { RowMenu } from "../../common/RowMenu/RowMenu";
 
 interface Account {
   id_Cuenta: number;
@@ -37,7 +38,6 @@ export default function AccountsTable() {
         endpoint: "/cuenta/convenios",
         query: `?page=${paginationModel.page + 1}&limit=${paginationModel.pageSize}`,
       });
-
       if (response.statusCode === 200 && response.data?.data) {
         setRows(response.data.data);
         setRowCount(response.data.total);
@@ -45,21 +45,31 @@ export default function AccountsTable() {
         setRows([]);
         setRowCount(0);
       }
-
       setLoading(false);
     }
-
     fetchAccounts();
   }, [paginationModel]);
 
+  const handleVer = useCallback((row: Account) => {
+    // aqui se puede implementar la lógica de ver detalles
+  }, []);
+
+  const handleEditar = useCallback((row: Account) => {
+    // aqui se puede implementar la lógica de edición
+  }, []);
+
+  const handleToggleEstado = useCallback(async (row: Account) => {
+    // Ejemplo: PATCH al backend y refrescar lista
+    const next = row.estado === "Activo" ? "Inactivo" : "Activo";
+    setRows(prev =>
+      prev.map(r => r.id_Cuenta === row.id_Cuenta ? { ...r, estado: next } : r)
+    );
+  }, []);
+
+
+
   const getRoleColor = (rol: string):
-    | "default"
-    | "primary"
-    | "secondary"
-    | "error"
-    | "info"
-    | "success"
-    | "warning" => {
+    | "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" => {
     const colors = {
       Coordinador: "info",
       Revisor: "warning",
@@ -75,7 +85,7 @@ export default function AccountsTable() {
   const getStatusColor = (estado: string) =>
     estado === "Activo" ? "success" : "error";
 
-  const columns: GridColDef<Account>[] = [
+  const columns: GridColDef<Account>[] = useMemo(() => [
     { field: "correo", headerName: "CORREO", flex: 1.3, minWidth: 200 },
     {
       field: "nombre",
@@ -125,21 +135,17 @@ export default function AccountsTable() {
       flex: 0.4,
       minWidth: 100,
       sortable: false,
-      renderCell: () => (
-        <Box sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100%",
-          height: "100%",
-        }}>
-          <Button variant="text" size="small" sx={{ fontSize: 18, color: "#555" }}>
-            ⋮
-          </Button>
-        </Box>
+      renderCell: (params) => (
+        <RowMenu<Account>
+          row={params.row}
+          estado={params.row.estado}
+          onVer={handleVer}
+          onEditar={handleEditar}
+          onToggleEstado={handleToggleEstado}
+        />
       ),
     },
-  ];
+  ], [handleVer, handleEditar, handleToggleEstado]);
 
   const CustomFooter = () => (
     <Toolbar className="footer-toolbar">
@@ -147,11 +153,8 @@ export default function AccountsTable() {
         <Button
           startIcon={<DownloadIcon fontSize="small" />}
           variant="text"
-          sx={{
-            textTransform: "none", color: "#333",
-            fontWeight: 500,
-            fontFamily: "madaniArabicRegular",
-          }}
+          sx={{ textTransform: "none", color: "#333", fontWeight: 500, fontFamily: "madaniArabicRegular" }}
+          onClick={() => console.log("Exportar Excel")}
         >
           Exportar Excel
         </Button>
@@ -175,10 +178,7 @@ export default function AccountsTable() {
         onPaginationModelChange={setPaginationModel}
         pageSizeOptions={[5, 10, 20]}
         slots={{ footer: CustomFooter }}
-        sx={{
-          border: "none",
-          "& .MuiDataGrid-columnHeaders": { fontWeight: 600 },
-        }}
+        sx={{ border: "none", "& .MuiDataGrid-columnHeaders": { fontWeight: 600 } }}
       />
     </Box>
   );
