@@ -3,11 +3,13 @@ import { Typography, Button } from "@mui/material";
 import Breadcrumbs from "~/common/Breadcrumbs/Breadcrumbs";
 import AccountsTable from "~/components/Accounts/AccountsTable";
 import "./styles/Accounts.css";
+import { useState } from "react";
 
 export default function Accounts() {
   const navigate = useNavigate();
   const location = useLocation();
   const isRoot = location.pathname === "/cuentas";
+  const [modo, setModo] = useState("tabla");
 
   return (
     <div>
@@ -21,6 +23,7 @@ export default function Accounts() {
       )}
 
       {isRoot ? (
+        modo === "tabla" ? (
         <>
           <Typography className="title-page">Gestión de Cuentas</Typography>
           <Button
@@ -40,6 +43,11 @@ export default function Accounts() {
           </Button>
           <AccountsTable />
         </>
+        ) : (
+          <h1>
+            Te Amo Hugo
+          </h1>
+        )
       ) : (
         <Outlet />
       )}

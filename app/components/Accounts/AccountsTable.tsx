@@ -56,6 +56,7 @@ export default function AccountsTable() {
 
   const handleEditar = useCallback((row: Account) => {
     // aqui se puede implementar la lógica de edición
+    console.log(row);
   }, []);
 
   const handleToggleEstado = useCallback(async (row: Account) => {
