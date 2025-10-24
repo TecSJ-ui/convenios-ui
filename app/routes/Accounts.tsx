@@ -1,13 +1,14 @@
-import { Outlet, useNavigate, useLocation } from "react-router";
-import { Typography, Button } from "@mui/material";
+import { useState } from "react";
+import { Outlet, useLocation } from "react-router";
 import Breadcrumbs from "~/common/Breadcrumbs/Breadcrumbs";
+import AccountsHeader from "~/components/Accounts/AccountsHeader";
 import AccountsTable from "~/components/Accounts/AccountsTable";
 import "./styles/Accounts.css";
 
 export default function Accounts() {
-  const navigate = useNavigate();
   const location = useLocation();
   const isRoot = location.pathname === "/cuentas";
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <div>
@@ -22,23 +23,8 @@ export default function Accounts() {
 
       {isRoot ? (
         <>
-          <Typography className="title-page">Gestión de Cuentas</Typography>
-          <Button
-            variant="contained"
-            sx={{
-              mt: 2,
-              backgroundColor: "#2563eb",
-              fontFamily: "madaniArabicRegular",
-              textTransform: "none",
-              fontSize: "1rem",
-              borderRadius: "8px",
-              mb: 4,
-            }}
-            onClick={() => navigate("/cuentas/crear")}
-          >
-            Ir a Alta de Cuenta
-          </Button>
-          <AccountsTable />
+          <AccountsHeader onSearch={setSearchQuery} />
+          <AccountsTable query={searchQuery} />
         </>
       ) : (
         <Outlet />
