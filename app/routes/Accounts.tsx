@@ -4,11 +4,14 @@ import Breadcrumbs from "~/common/Breadcrumbs/Breadcrumbs";
 import AccountsHeader from "~/components/Accounts/AccountsHeader";
 import AccountsTable from "~/components/Accounts/AccountsTable";
 import "./styles/Accounts.css";
+import UpdateAccounts from "~/components/Accounts/updateAccounts";
 
 export default function Accounts() {
   const location = useLocation();
   const isRoot = location.pathname === "/cuentas";
   const [searchQuery, setSearchQuery] = useState("");
+  const [modo, setModo] = useState("tabla");
+  const [seleccion, setSeleccion] = useState([]);
 
   return (
     <div>
@@ -22,10 +25,16 @@ export default function Accounts() {
       )}
 
       {isRoot ? (
-        <>
-          <AccountsHeader onSearch={setSearchQuery} />
-          <AccountsTable query={searchQuery} />
-        </>
+        modo === "tabla" ? (
+          <>
+            <AccountsHeader onSearch={setSearchQuery} />
+            <AccountsTable query={searchQuery} setModo={setModo} setSelecccion={setSeleccion}/>
+          </>
+        ) : (
+          <>
+            <UpdateAccounts setModo={setModo} setSelecccion={setSeleccion} seleccion={seleccion}/>
+          </>
+        )
       ) : (
         <Outlet />
       )}

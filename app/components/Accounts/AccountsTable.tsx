@@ -24,9 +24,11 @@ interface Account {
 
 interface AccountsTableProps {
   query: string;
+  setModo: (modo: string) => void;
+  setSelecccion: (seleccion: any) => void
 }
 
-export default function AccountsTable({ query }: AccountsTableProps) {
+export default function AccountsTable({ query, setModo, setSelecccion }: AccountsTableProps) {
   const [rows, setRows] = useState<Account[]>([]);
   const [filteredRows, setFilteredRows] = useState<Account[]>([]);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -106,7 +108,9 @@ export default function AccountsTable({ query }: AccountsTableProps) {
   }, []);
 
   const handleEditar = useCallback((row: Account) => {
-    // Lógica para editar
+    setModo("editar");
+    setSelecccion(row);
+    console.log(row);
   }, []);
 
   const handleToggleEstado = useCallback(async (row: Account) => {
