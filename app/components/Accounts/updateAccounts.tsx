@@ -161,7 +161,33 @@ export default function UpdateAccounts({setModo, setSelecccion, seleccion}: Acco
     }
 
     return (
-  <Box sx={{ minHeight: "100vh", py: 4 }}>
+    <>
+      <nav className="breadcrumbs">
+        <span
+          className={`crumb clickable`}
+          onClick={() => {handleCancelar()}}
+        >
+          {"Gestión de Cuentas"}
+          <span className="separator">›</span>
+        </span>
+        <span
+          className={`crumb `}
+          onClick={() => {console.log("hace click")}}
+        >
+          {"Editar cuenta"}
+        </span>
+    </nav>
+    <Typography
+      sx={{
+        fontFamily: "madaniArabicMedium",
+        fontSize: "2rem",
+        color: "#1e1e2f",
+        mb: 2,
+      }}
+    >
+      Editar Cuenta
+    </Typography>
+    <Box sx={{ minHeight: "100vh", py: 4 }}>
     <Box sx={{ maxWidth: 1100, mx: "auto", px: 3 }}>
       {/* Título como en el mock */}
      
@@ -274,5 +300,6 @@ export default function UpdateAccounts({setModo, setSelecccion, seleccion}: Acco
       </Box>
     </Box>
     </Box>
+    </>
 );
 }
