@@ -242,7 +242,7 @@ export default function UpdateAccounts({setModo, setSelecccion, seleccion}: Acco
                   value={form.unidadAcademica}
                   onChange={(e) => setForm(s => ({ ...s, unidadAcademica: (e.target as HTMLInputElement).value }))}
                   options={ui.unidades}
-                  loading={ui.cargandoUnidades}
+                  loading={false}
                   placeholder="Selecciona una unidad"
                   disabled={ui.cargandoUnidades && !hayOpciones}
                   helperText={
