@@ -7,7 +7,7 @@ import {
 } from "@mui/x-data-grid";
 import { Box, Button, Chip, Toolbar } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
-import { getData } from "~/utils/apiUtils";
+import { getData, deleteRecord } from "~/utils/apiUtils";
 import "./styles/AccountsTable.css";
 import { RowMenu } from "../../common/RowMenu/RowMenu";
 
@@ -114,13 +114,28 @@ export default function AccountsTable({ query, setModo, setSelecccion }: Account
   }, []);
 
   const handleToggleEstado = useCallback(async (row: Account) => {
-    const next = row.estado === "Activo" ? "Inactivo" : "Activo";
-    setRows((prev) =>
-      prev.map((r) =>
-        r.id_Cuenta === row.id_Cuenta ? { ...r, estado: next } : r
-      )
-    );
-  }, []);
+    const nextEstado = row.estado === "Activo" ? "Inactivo" : "Activo";
+    const endpoint = `/cuenta/${row.id_Cuenta}/${nextEstado}`; 
+    try {
+        const response = await deleteRecord({
+            endpoint: endpoint,
+        });
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+            setRows((prev) =>
+                prev.map((r) =>
+                    r.id_Cuenta === row.id_Cuenta ? { ...r, estado: nextEstado } : r
+                )
+            );
+        } else {
+            console.error("Error al actualizar el estado:", response.errorMessage);
+            alert("No se pudo actualizar el estado de la cuenta.");
+        }
+
+    } catch (error) {
+        console.error("Error de conexión o excepción inesperada:", error);
+        alert("Ocurrió un error inesperado al intentar conectar con el servidor.");
+    }
+}, []);
 
   const getRoleColor = (rol: string):
     | "default"
