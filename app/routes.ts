@@ -7,7 +7,9 @@ export default [
   route("", "components/Protected/ProtectedRoute.tsx", [
     route("", "routes/layouts/ProtectedLayout.tsx", [
       route("inicio", "routes/Home.tsx"),
-      route("convenios", "routes/Convenios.tsx"),
+      route("convenios", "routes/Convenios.tsx", [
+        route("crear", "routes/ConveniosRegistration.tsx"),
+      ]),
       route("indicadores", "routes/Indicators.tsx"),
       route("configuracion", "routes/Settings.tsx"),
       route("cuentas", "routes/Accounts.tsx", [

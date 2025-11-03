@@ -19,7 +19,7 @@ export default function Accounts() {
         <Breadcrumbs
           items={[
             { label: "Gestión de Cuentas", path: "/cuentas" },
-            { label: "Alta de Cuenta" },
+            { label: "Alta de Cuenta", path: "/crear" },
           ]}
         />
       )}
