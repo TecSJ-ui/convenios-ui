@@ -7,14 +7,13 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import VisibilityIcon from "@mui/icons-material/VisibilityOutlined";
 import BlockIcon from "@mui/icons-material/Block";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import FileDownloadIcon from "@mui/icons-material/FileDownloadOutlined";
 
 export interface RowMenuProps<T> {
   row: T;
   onVer?: (r: T) => void;
   onEditar?: (r: T) => void;
   onToggleEstado?: (r: T) => void;
-  estado?: "Activo" | "Inactivo";
+  estado?: "Activo" | "Inactivo" |'Incompleto' | 'Completo' | 'En Revisión' | 'En Corrección' | 'Revisado' | 'En Validación' | 'Requiere Ajuste'| 'Validado' | 'Cancelado';
 }
 
 export function RowMenu<T>({
