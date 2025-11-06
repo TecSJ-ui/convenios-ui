@@ -7,10 +7,10 @@ import {
 } from "@mui/x-data-grid";
 import { Box, Button, Chip, Toolbar } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
-import { getData, deleteRecord } from "~/utils/apiUtils";
+import { getData } from "~/utils/apiUtils";
 import "./styles/ConveniosTable.css";
 import { RowMenu } from "../../common/RowMenu/RowMenu";
-
+import { useAuthContext } from "~/context/AuthContext";
 interface Convenio {
     id_Convenio: number;
     numero_Convenio: string;
@@ -33,6 +33,7 @@ interface ConveniosTableProps {
 }
 
 export default function ConveniosTable({ query, setModo, setSelecccion }: ConveniosTableProps) {
+    const { user } = useAuthContext();
     const [rows, setRows] = useState<Convenio[]>([]);
     const [filteredRows, setFilteredRows] = useState<Convenio[]>([]);
     const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -112,10 +113,15 @@ export default function ConveniosTable({ query, setModo, setSelecccion }: Conven
     const handleEditar = useCallback((row: Convenio) => {
         setModo("editar");
         setSelecccion(row);
-        console.log(row);
     }, []);
 
-    const handleToggleEstado = useCallback(async (row: Convenio) => {
+    const handleEnviarRevision = useCallback(async (row: Convenio) => {
+    }, []);
+
+    const handleEnviarValidar = useCallback(async (row: Convenio) => {
+    }, []);
+
+    const handleCancelar = useCallback(async (row: Convenio) => {
     }, []);
 
     const getRoleColor = (rol: string):
@@ -212,18 +218,74 @@ export default function ConveniosTable({ query, setModo, setSelecccion }: Conven
         flex: 0.4,
         minWidth: 100,
         sortable: false,
-        renderCell: (params) => (
-          <RowMenu<Convenio>
-            row={params.row}
-            estado={params.row.estado}
-            onVer={handleVer}
-            onEditar={handleEditar}
-            onToggleEstado={handleToggleEstado}
-          />
-        ),
+        renderCell: (params) => {
+          const row = params.row;
+
+          let verFn = undefined as ((r: Convenio) => void) | undefined;
+          let editarFn = undefined as ((r: Convenio) => void) | undefined;
+          let enviarRevisionFn = undefined as ((r: Convenio) => void) | undefined;
+          let enviarValidarFn = undefined as ((r: Convenio) => void) | undefined;
+          let cancelarFn = undefined as ((r: Convenio) => void) | undefined;
+          
+          if (user) {
+            verFn = handleVer;
+          }
+
+          const estadoActual = row.estado;
+          
+          switch (user?.rol) {
+            case 'Organizacion':
+            case 'Gestor':
+              if (estadoActual === 'Incompleto' || estadoActual === 'Completo' || estadoActual === 'En Corrección') {
+                  cancelarFn = handleCancelar;
+              }
+              if ( estadoActual === 'Completo'  || estadoActual === 'En Corrección') {
+                  enviarRevisionFn = handleEnviarRevision;
+              }
+              if ( estadoActual === 'Incompleto' || estadoActual === 'En Corrección') {
+                  editarFn = handleEditar;
+              }
+              break;
+              
+            case 'Revisor':
+              if (estadoActual !== 'En Validación' && estadoActual !== 'En Revisión' && estadoActual !== 'Validado' && estadoActual !== 'Cancelado') {
+                  editarFn = handleEditar;
+                  cancelarFn = handleCancelar;
+              }
+              if (estadoActual === 'Revisado') {
+                  enviarValidarFn = handleEnviarValidar;
+              }
+              break;
+
+            case 'Coordinador':
+              if (estadoActual !== 'Revisado' && estadoActual !== 'Validado' && estadoActual !== 'Cancelado' ) {
+                  editarFn = handleEditar;
+                  cancelarFn = handleCancelar;
+                }
+               
+              if ( estadoActual === 'Completo'  || estadoActual === 'En Corrección') {
+                  enviarRevisionFn = handleEnviarRevision;
+              }
+              if (estadoActual === 'Revisado' || estadoActual === 'Requiere Ajuste') {
+                enviarValidarFn = handleEnviarValidar;
+              }
+              break;
+          }
+          return (
+            <RowMenu<Convenio>
+              row={params.row}
+              estado={params.row.estado}
+              onVer={verFn}
+              onEditar={editarFn}
+              onEnviarRevision={enviarRevisionFn}
+              onEnviarValidar={enviarValidarFn}
+              onCancelar={cancelarFn}
+            />
+          );
+        },
       },
     ],
-    [handleVer, handleEditar, handleToggleEstado]
+    [handleVer, handleEditar, handleEnviarRevision, handleEnviarValidar, handleCancelar]
   );
 
   const CustomFooter = () => (
