@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Outlet, useLocation } from "react-router";
 import Breadcrumbs from "~/common/Breadcrumbs/Breadcrumbs";
 import ConveniosHeader from "~/components/Convenios/ConveniosHeader";
-import ConveniosTable from "~/components/Convenios/ConveniosTable"; 
+import ConveniosTable, { type Convenio } from "~/components/Convenios/ConveniosTable"; 
 
 export default function Accounts() {
   const location = useLocation();
   const isRoot = location.pathname === "/convenios";
   const [searchQuery, setSearchQuery] = useState("");
   const [modo, setModo] = useState("tabla");
-  const [seleccion, setSeleccion] = useState([]);
+  const [seleccion, setSeleccion] = useState<Convenio | null>(null);
 
   return (
     <div>
